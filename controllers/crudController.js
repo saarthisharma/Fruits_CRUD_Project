@@ -1,13 +1,9 @@
-const express = require("express");
-const router = express.Router();
-
-// requiring models
-const Fruits = require("./model/fruits")
-const Fruits_props = require("./model/fruitsProperties");
-const Sales = require("./model/sales")
+const Fruits = require("../model/fruits")
+const Fruits_props = require("../model/fruitsProperties");
+const Sales = require("../model/sales")
 
 // api to create fruit
-router.post("/add" , async(req,res)=>{
+exports.createFruit=async(req,res)=>{
     const {name , country ,price, count } = req.body
     try{
         fruit = new Fruits({
@@ -22,10 +18,10 @@ router.post("/add" , async(req,res)=>{
         console.log(error)
         res.status(500).json({error :"server error"})
     }
-});
+}
 
 // api to create fruit properties
-router.post("/properties" ,async(req,res)=>{
+exports.createFruitProperties=async(req,res)=>{
     // const fruit_id = req.params.id
     const{fruit_id,colour , smell,taste} = req.body
     try {
@@ -41,10 +37,10 @@ router.post("/properties" ,async(req,res)=>{
         console.log(error)
         res.status(500).json({error : "server error"})
     }
-});
+}
 
 // api to update fruit
-router.put("/:id", async(req , res)=>{
+exports.updateFruit=async(req , res)=>{
     const fruitID = req.params.id;
     try {
         const {name , country , count} = req.body;
@@ -60,10 +56,10 @@ router.put("/:id", async(req , res)=>{
         res.status(500).json({error : "server error"});
     }
 
-})
+}
 
 // deleting an fruit
-router.delete("/:id" , async(req , res)=>{
+exports.deleteFruit=async(req , res)=>{
     const fruitID = req.params.id;
     try {
       await Fruits.findByIdAndRemove(fruitID);
@@ -72,10 +68,10 @@ router.delete("/:id" , async(req , res)=>{
       console.log(error);
       res.status(500).json({ error: "Server Error" });
     }
-  });
+  }
 
 // api for sale collection
-router.post("/sales" , async(req,res)=>{
+exports.createSale=async(req,res)=>{
     try {
         const{fruit_id}=req.body
         const sale = new Sales({
@@ -86,10 +82,10 @@ router.post("/sales" , async(req,res)=>{
     } catch (error) {
         res.status(500).json({error:"server error"})
     }
-})
+}
 
 // api to purchase fruit
-router.post("/purchase" , async(req,res)=>{
+exports.purchaseFruit=async(req,res)=>{
     try {
         const fruit_object_id = "620236c7f9179c3408687d10";
         const upa = await Fruits.updateOne(
@@ -101,37 +97,4 @@ router.post("/purchase" , async(req,res)=>{
         console.log(error)
         res.status(500).json({error : "server error"})
     }
-})
-
-module.exports = router;
-
-// api to insert price
-// router.post("/addPrice" , async(req,res)=>{
-//     try {
-//         const fruit_id = req.params.id;
-//         const {price} = req.body
-//         const updatePrice = {};
-//         if(price) updatePrice.price = price;
-//         console.log("=====>",updatePrice)
-//         const update = await Fruits.updateOne(
-//             fruit_id , {$set:updatePrice},{upsert : true}
-//         );
-//         res.status(201).json({update})
-//     } catch (error) {
-//         res.status(500).json({error : "server error"});
-//     }
-// })
-
-// api for making count = 0
-// router.post("/count" , (req,res)=>{
-//     try {
-//         const fruitID = req.params.id;
-//         const update_many =Fruits.findByIdAndUpdate(
-//             {fruitID},
-//             {$set:{"count":"req.body"}}
-//             )
-//             res.status(201).json({update_many})
-//     } catch (error) {
-//         res.status(500).json({error : "server error"});
-//     }
-// })
+}

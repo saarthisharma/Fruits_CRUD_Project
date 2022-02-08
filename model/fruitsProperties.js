@@ -6,13 +6,16 @@ const PropertiesSchema =new mongoose.Schema({
         ref:"Fruits"
     },
     colour :{
-        type : String
+        type : String,
+        require:true
     },
     smell :{
-        type:String
+        type:String,
+        require:true
     },
     taste :{
-        type:String
+        type:String,
+        require:true
     }
 })
 module.exports = new mongoose.model("Properties" , PropertiesSchema)

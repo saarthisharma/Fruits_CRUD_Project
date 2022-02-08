@@ -7,16 +7,14 @@ const app = express();
 const req = require("express/lib/request");
 const ObjectId = mongoose.Types.ObjectId;
 
-const PORT = process.env.PORT
+const PORT = 3000
 
-mongoose.connect("mongodb://localhost/Fruits", ()=>{
-    console.log("connected")
-},error =>{
-    console.log(error)
-})
+// requiring database
+const connectDB = require("./config/dbConnection");
+connectDB();
 
 // requiring routes
-app.use("/crudEvents" ,require("./routes/crudEvents"))
+app.use("/crudEvents" ,require("./routes/crudRoute"))
 
 // parse requests of content-type - application/json
 app.use(express.json());
