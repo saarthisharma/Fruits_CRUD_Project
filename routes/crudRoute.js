@@ -4,6 +4,7 @@ const router = express.Router();
 // requiring controllers
 const crudController = require("../controllers/crudController")
 
+// routes
 router.post("/addfruit",crudController.createFruit)
 router.post("/properties" ,crudController.createFruitProperties)
 router.put("/:id",crudController.updateFruit)

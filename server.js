@@ -1,23 +1,23 @@
 const express = require("express");
-const mongoose = require("mongoose")
-const bodyparser = require("body-parser")
-const dotenv = require("dotenv")
-const res = require("express/lib/response");
 const app = express();
+const bodyparser = require("body-parser")
+const res = require("express/lib/response");
 const req = require("express/lib/request");
-const ObjectId = mongoose.Types.ObjectId;
+const dotenv = require("dotenv")
+const path = require("path");
+dotenv.config({path : ".env"})
 
-const PORT = 3000
+const PORT = process.env.PORT || 8080
 
 // requiring database
 const connectDB = require("./config/dbConnection");
 connectDB();
 
-// requiring routes
-app.use("/crudEvents" ,require("./routes/crudRoute"))
-
 // parse requests of content-type - application/json
 app.use(express.json());
+
+// requiring routes
+app.use("" ,require("./routes/crudRoute"))
 
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));

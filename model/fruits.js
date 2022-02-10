@@ -3,19 +3,19 @@ const mongoose = require("mongoose")
 const FruitsSchema =new mongoose.Schema({
     name :{
         type : String,
-        require:true
+        required:true
     },
     country :{
         type : String,
-        require:true
+        required:true
     },
     price :{
         type:Number,
-        require:true
+        required:true
     },
     count :{
         type :Number,
-        require:true
+        required:true
     }
 })
 

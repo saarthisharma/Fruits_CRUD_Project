@@ -1,6 +1,14 @@
+const res = require("express/lib/response");
+const req = require("express/lib/request");
+const mongoose = require("mongoose")
+const ObjectId = mongoose.Types.ObjectId;
+const responseHandler = require("../helper/responseHandler");
+const messages = require("../helper/messages")
+
+// requiring models
 const Fruits = require("../model/fruits")
 const Fruits_props = require("../model/fruitsProperties");
-const Sales = require("../model/sales")
+const Sales = require("../model/sales");
 
 // api to create fruit
 exports.createFruit=async(req,res)=>{
@@ -13,17 +21,17 @@ exports.createFruit=async(req,res)=>{
             count        
         });
         const new_fruit = await fruit.save()
-        res.status(201).json({fruit : new_fruit});
+        console.log('messages :', messages);
+        responseHandler.handler(res,true, messages.customMessages.fruitadded, [], 201)
     }catch(error){
         console.log(error)
-        res.status(500).json({error :"server error"})
+        responseHandler.handler(res,false, messages.customMessages.error, [], 500)
     }
 }
 
 // api to create fruit properties
 exports.createFruitProperties=async(req,res)=>{
-    // const fruit_id = req.params.id
-    const{fruit_id,colour , smell,taste} = req.body
+    const{fruit_id,colour,smell,taste} = req.body
     try {
         fruit_props = new Fruits_props({
             fruit_id,
@@ -32,10 +40,10 @@ exports.createFruitProperties=async(req,res)=>{
             taste
         });
         const fruit= await fruit_props.save();
-        res.status(201).json({fruit_props :fruit});
+        responseHandler.handler(res,true, messages.customMessages.addedFruitProperties, [], 201)
     } catch (error) {
         console.log(error)
-        res.status(500).json({error : "server error"})
+        responseHandler.handler(res,false, messages.customMessages.error, [], 500)
     }
 }
 
@@ -48,14 +56,13 @@ exports.updateFruit=async(req , res)=>{
         if (name) updatedevent.name = name;
         if (country) updatedevent.country = country;
         if (count) updatedevent.count= count;
-
         const event = await Fruits.findByIdAndUpdate(fruitID , { $set : updatedevent} , {new : true});
         res.status(201).json({event});
+        responseHandler.handler(res,true, messages.customMessages.updateFruit, [], 201)
     } catch (error) {
         console.log(error);
-        res.status(500).json({error : "server error"});
+        responseHandler.handler(res,false, messages.customMessages.error, [], 500)
     }
-
 }
 
 // deleting an fruit
@@ -63,10 +70,10 @@ exports.deleteFruit=async(req , res)=>{
     const fruitID = req.params.id;
     try {
       await Fruits.findByIdAndRemove(fruitID);
-      res.status(200).json({ msg: "fruit Removed" });
+      responseHandler.handler(res,true, messages.customMessages.deleteFruit, [], 201)
     } catch (error) {
       console.log(error);
-      res.status(500).json({ error: "Server Error" });
+      responseHandler.handler(res,false, messages.customMessages.error, [], 500)
     }
   }
 
@@ -80,7 +87,7 @@ exports.createSale=async(req,res)=>{
         const new_sales= await sale.save()
         res.status(201).json({new_sales})
     } catch (error) {
-        res.status(500).json({error:"server error"})
+        responseHandler.handler(res,false, messages.customMessages.error, [], 500)
     }
 }
 
@@ -92,9 +99,9 @@ exports.purchaseFruit=async(req,res)=>{
             {"_id" : fruit_object_id} , {$inc:{"count":1}}
         );
         console.log("upa--->", upa);
-        res.status(201).json("count is increment by 1")
+        responseHandler.handler(res,true, messages.customMessages.fruitPurchased, [], 201)
     } catch (error) {
         console.log(error)
-        res.status(500).json({error : "server error"})
+        responseHandler.handler(res,false, messages.customMessages.error, [], 500)
     }
 }

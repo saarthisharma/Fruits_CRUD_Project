@@ -7,15 +7,15 @@ const PropertiesSchema =new mongoose.Schema({
     },
     colour :{
         type : String,
-        require:true
+        required:true
     },
     smell :{
         type:String,
-        require:true
+        required:true
     },
     taste :{
         type:String,
-        require:true
+        required:true
     }
 })
 module.exports = new mongoose.model("Properties" , PropertiesSchema)
