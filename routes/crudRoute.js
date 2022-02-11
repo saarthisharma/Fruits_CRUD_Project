@@ -11,5 +11,7 @@ router.put("/:id",crudController.updateFruit)
 router.delete("/:id" ,crudController.deleteFruit)
 router.post("/sales" ,crudController.createSale)
 router.post("/purchase",crudController.purchaseFruit)
+router.get("/Pagination",crudController.Pagination)
+router.get("/fruitWithProperties",crudController.fruitWithProperties)
 
 module.exports = router;

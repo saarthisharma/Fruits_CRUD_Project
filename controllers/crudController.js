@@ -21,7 +21,6 @@ exports.createFruit=async(req,res)=>{
             count        
         });
         const new_fruit = await fruit.save()
-        console.log('messages :', messages);
         responseHandler.handler(res,true, messages.customMessages.fruitadded, [], 201)
     }catch(error){
         console.log(error)
@@ -85,7 +84,8 @@ exports.createSale=async(req,res)=>{
             fruit_id
         })
         const new_sales= await sale.save()
-        res.status(201).json({new_sales})
+        // res.status(201).json({new_sales})
+        responseHandler.handler(res,true, messages.customMessages.createSale, [], 201)
     } catch (error) {
         responseHandler.handler(res,false, messages.customMessages.error, [], 500)
     }
@@ -94,14 +94,105 @@ exports.createSale=async(req,res)=>{
 // api to purchase fruit
 exports.purchaseFruit=async(req,res)=>{
     try {
-        const fruit_object_id = "620236c7f9179c3408687d10";
-        const upa = await Fruits.updateOne(
-            {"_id" : fruit_object_id} , {$inc:{"count":1}}
+        const fruitObjectId = req.query.id;
+        const update = await Fruits.updateOne(
+            {"_id" : fruitObjectId} , {$inc:{"count":1}}
         );
-        console.log("upa--->", upa);
         responseHandler.handler(res,true, messages.customMessages.fruitPurchased, [], 201)
     } catch (error) {
         console.log(error)
         responseHandler.handler(res,false, messages.customMessages.error, [], 500)
     }
+}
+
+// api for pagination ,sorting and searching
+exports.Pagination=async(req,res)=>{
+    try {
+        let page =  req.query.page; 
+        let rowsPerPage =  req.query.rowsPerPage;
+        // filter for searching
+        let filter =  req.query.filter;
+
+        // for sorting 
+        let recordSort =  req.query.recordSort;
+
+        let totalDocuments = await Fruits.count()
+        let numberOfPages = Math.floor(totalDocuments / rowsPerPage)
+
+        // for searching   
+        let query = {}
+
+        if (filter) {
+            query['name'] = filter 
+        }
+        
+        let sort = {name : 1}
+
+        if (recordSort){
+            sort[recordSort] = -1
+        }
+
+        let skip = (page - 1) * rowsPerPage
+
+        let limit = rowsPerPage
+
+        let data = await Fruits.find(query).sort(sort).skip(skip).limit(limit)
+
+        res.status(200).json({data})
+    } catch (error) {
+        res.status(500).json({"error" :"internal server error"})
+    }
+}
+
+// api to join fruits and their properties
+
+exports.fruitWithProperties = async(req,res)=>{
+    try {
+        let page = req.query.page
+        let rowsPerPage =  req.query.rowsPerPage;
+        let filter = req.query.filter
+        let query = {}
+        if (filter) {
+            query['name'] = filter 
+        }
+        let sort = {name : 1}
+        let skip = (page - 1) * rowsPerPage
+        let limit = +rowsPerPage
+        let joinedCollection= await Fruits.aggregate([
+            {
+                $match:query
+            },
+            {
+                $sort:sort
+            },
+            {
+                $skip: skip
+            },
+            {
+                $limit: limit
+            },
+            {
+                $lookup:
+                {
+                    from:"properties",
+                    localField:"_id",
+                    foreignField:"fruit_id",
+                    as:"Properties"
+                }
+            },
+            {
+                $project: {
+                    __v: false,
+                    Properties: {
+                        __v: false,
+                        fruit_id: false
+                    }
+                }
+            }
+        ])
+        responseHandler.handler(res,true, messages.customMessages.fruitWithProperties, joinedCollection, 201)  
+    } catch (error) {
+        console.log("===>",error)
+        responseHandler.handler(res,false, messages.customMessages.error, [], 500)
+    }   
 }
