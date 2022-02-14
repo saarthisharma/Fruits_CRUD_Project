@@ -35,7 +35,6 @@ exports.createFruit=async(req,res)=>{
 
         return responseHandler.handler(res,true, messages.customMessages.fruitadded, [], 201)
     }catch(error){
-        console.log(error)
         return responseHandler.handler(res,false, messages.customMessages.error, [], 500)
     }
 }
@@ -53,7 +52,6 @@ exports.createFruitProperties=async(req,res)=>{
         const fruit= await fruit_props.save();
         responseHandler.handler(res,true, messages.customMessages.addedFruitProperties, [], 201)
     } catch (error) {
-        console.log(error)
         responseHandler.handler(res,false, messages.customMessages.error, [], 500)
     }
 }
@@ -71,7 +69,6 @@ exports.updateFruit=async(req , res)=>{
         res.status(201).json({event});
         responseHandler.handler(res,true, messages.customMessages.updateFruit, [], 201)
     } catch (error) {
-        console.log(error);
         responseHandler.handler(res,false, messages.customMessages.error, [], 500)
     }
 }
@@ -83,7 +80,6 @@ exports.deleteFruit=async(req , res)=>{
       await Fruits.findByIdAndRemove(fruitID);
       responseHandler.handler(res,true, messages.customMessages.deleteFruit, [], 201)
     } catch (error) {
-      console.log(error);
       responseHandler.handler(res,false, messages.customMessages.error, [], 500)
     }
   }
@@ -114,7 +110,6 @@ exports.purchaseFruit=async(req,res)=>{
         );
         responseHandler.handler(res,true, messages.customMessages.fruitPurchased, [], 201)
     } catch (error) {
-        console.log(error)
         responseHandler.handler(res,false, messages.customMessages.error, [], 500)
     }
 }
@@ -159,7 +154,6 @@ exports.Pagination=async(req,res)=>{
 }
 
 // api to join fruits and their properties
-
 exports.fruitWithProperties = async(req,res)=>{
     try {
         let page = req.query.page
@@ -206,7 +200,6 @@ exports.fruitWithProperties = async(req,res)=>{
         ])
         responseHandler.handler(res,true, messages.customMessages.fruitWithProperties, joinedCollection, 201)  
     } catch (error) {
-        console.log("===>",error)
         responseHandler.handler(res,false, messages.customMessages.error, [], 500)
     }   
 }
@@ -251,9 +244,7 @@ exports.fruitSales = async(req,res)=>{
         ])
         let finalResult = dateRange.map((element) => {
             return element.finalFruits
-        });
-        console.log("====>",finalResult)        
-        console.log("=====>",dateRange)
+        });        
         responseHandler.handler(res,true, messages.customMessages.fruitInSpecificDate,finalResult, 201)
     } catch (error) {
         console.log(error)
