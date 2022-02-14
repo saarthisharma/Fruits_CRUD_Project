@@ -11,5 +11,6 @@ router.put("/:id",crudController.updateFruit)
 router.delete("/:id" ,crudController.deleteFruit)
 router.post("/sales" ,crudController.createSale)
 router.post("/purchase",crudController.purchaseFruit)
+// router.get("/getsalesdata",crudController.fruitSales)
 
 module.exports = router;
