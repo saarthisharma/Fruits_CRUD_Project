@@ -3,16 +3,27 @@ const req = require("express/lib/request");
 const mongoose = require("mongoose")
 const ObjectId = mongoose.Types.ObjectId;
 const responseHandler = require("../helper/responseHandler");
-const messages = require("../helper/messages")
+const messages = require("../helper/messages");
+const Joi = require("joi")
+
+// requiring joi validator
+const {fruitSchema} = require("../Validations/fruitValidator/fruitValSchema")
 
 // requiring models
 const Fruits = require("../model/fruits")
 const Fruits_props = require("../model/fruitsProperties");
 const Sales = require("../model/sales");
+const fruits = require("../model/fruits");
 
 // api to create fruit
 exports.createFruit=async(req,res)=>{
     const {name , country ,price, count } = req.body
+    const validate = await fruitSchema.validate(req.body)
+    
+    if (validate.error) {
+        return responseHandler.handler(res,false, messages.customMessages.error, [], 422)
+    }
+
     try{
         fruit = new Fruits({
             name,
@@ -21,10 +32,11 @@ exports.createFruit=async(req,res)=>{
             count        
         });
         const new_fruit = await fruit.save()
-        responseHandler.handler(res,true, messages.customMessages.fruitadded, [], 201)
+
+        return responseHandler.handler(res,true, messages.customMessages.fruitadded, [], 201)
     }catch(error){
         console.log(error)
-        responseHandler.handler(res,false, messages.customMessages.error, [], 500)
+        return responseHandler.handler(res,false, messages.customMessages.error, [], 500)
     }
 }
 
@@ -80,8 +92,10 @@ exports.deleteFruit=async(req , res)=>{
 exports.createSale=async(req,res)=>{
     try {
         const{fruit_id}=req.body
+        const{created_at}=req.body
         const sale = new Sales({
-            fruit_id
+            fruit_id,
+            created_at
         })
         const new_sales= await sale.save()
         // res.status(201).json({new_sales})
@@ -196,3 +210,43 @@ exports.fruitWithProperties = async(req,res)=>{
         responseHandler.handler(res,false, messages.customMessages.error, [], 500)
     }   
 }
+
+// api to get fruit sells on specific date range
+// exports.fruitSales = async(req,res)=>{
+//     try {
+//         let sales = await Fruits.aggregate([
+//             {
+//                 $lookup:
+//                 {
+//                     from:"Sales",
+//                     localField:"_id",
+//                     foreignField:"fruit_id",
+//                     as:"fruitsales"
+//                 }
+//             }    
+//             ])
+//             console.log("====>",sales)
+//             res.status(201).json({sales})
+//     } catch (error) {
+//         console.log(error)
+//         res.status(500).json({error:"internal server error"})
+//     }
+// }
+// exports.fruitSales = async(req,res)=>{
+//     try {
+//         let sales = await fruits.aggregate([
+//             {
+//                 $lookup:
+//                 {
+//                     from : "sale",
+//                     localField: "_id",
+//                     foreignField: "fruit_id",
+//                     as: "sales"
+//                 }
+//             }
+//         ])
+
+//     } catch (error) {
+        
+//     }
+// }
