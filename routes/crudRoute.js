@@ -13,6 +13,6 @@ router.post("/sales" ,crudController.createSale)
 router.post("/purchase",crudController.purchaseFruit)
 router.get("/Pagination",crudController.Pagination)
 router.get("/fruitWithProperties",crudController.fruitWithProperties)
-// router.get("/getsalesdata",crudController.fruitSales)
+router.get("/getsalesdata",crudController.fruitSales)
 
 module.exports = router;

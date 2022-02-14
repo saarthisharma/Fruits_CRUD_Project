@@ -212,41 +212,51 @@ exports.fruitWithProperties = async(req,res)=>{
 }
 
 // api to get fruit sells on specific date range
-// exports.fruitSales = async(req,res)=>{
-//     try {
-//         let sales = await Fruits.aggregate([
-//             {
-//                 $lookup:
-//                 {
-//                     from:"Sales",
-//                     localField:"_id",
-//                     foreignField:"fruit_id",
-//                     as:"fruitsales"
-//                 }
-//             }    
-//             ])
-//             console.log("====>",sales)
-//             res.status(201).json({sales})
-//     } catch (error) {
-//         console.log(error)
-//         res.status(500).json({error:"internal server error"})
-//     }
-// }
-// exports.fruitSales = async(req,res)=>{
-//     try {
-//         let sales = await fruits.aggregate([
-//             {
-//                 $lookup:
-//                 {
-//                     from : "sale",
-//                     localField: "_id",
-//                     foreignField: "fruit_id",
-//                     as: "sales"
-//                 }
-//             }
-//         ])
-
-//     } catch (error) {
-        
-//     }
-// }
+exports.fruitSales = async(req,res)=>{
+    try {
+        let fromDate = req.query.fromDate
+        let toDate = req.query.toDate
+        let dateRange = await Sales.aggregate([
+            {
+                $match:{
+                "created_at":{$gte:new Date(fromDate),
+                $lte:new Date(toDate)}
+                }
+            },
+            {
+                $project: {
+                    __v: false
+                }
+            },
+            {
+                $lookup:
+                    {
+                        from:"fruits",
+                        localField:"fruit_id",
+                        foreignField:"_id",
+                        as:"finalFruits"
+                    }                
+            },
+            {
+                $project: {
+                    _id: false,
+                    finalFruits: {
+                        name:true
+                    }
+                }
+            },
+            {
+                "$unwind": "$finalFruits"
+            }        
+        ])
+        let finalResult = dateRange.map((element) => {
+            return element.finalFruits
+        });
+        console.log("====>",finalResult)        
+        console.log("=====>",dateRange)
+        responseHandler.handler(res,true, messages.customMessages.fruitInSpecificDate,finalResult, 201)
+    } catch (error) {
+        console.log(error)
+        responseHandler.handler(res,false, messages.customMessages.error, [], 500)
+    }
+}
